@@ -1,4 +1,3 @@
-
 use std::fmt::Display;
 use sha2::{Sha256, Digest};
 
@@ -36,7 +35,8 @@ impl MerkleTree {
             let mut next_row: Vec<String> = vec!();
             // Hash concaternation of pairs of items on current row to build next row
             for i in (0..tree[row].len()).step_by(2) {
-                next_row.push(hash((tree[row][i].clone() + &tree[row][i+1]).as_ref()));
+                let concat = MerkleTree::concat_string(&tree[row][i],&tree[row][i+1]);
+                next_row.push(hash(concat.as_ref()));
             }
             // println!("next row: {:?}", next_row);
             tree.push(next_row);
@@ -47,6 +47,10 @@ impl MerkleTree {
             depth
         }
     } 
+
+    fn concat_string(string1: &String, string2: &String) -> String {
+        string1.clone() + &string2
+    }
 
     fn find_depth(num_items: usize) -> usize {
         (num_items.next_power_of_two().ilog2()+1).try_into().unwrap()
