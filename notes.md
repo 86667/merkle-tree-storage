@@ -32,7 +32,7 @@
 - production extra thigns to consider:
   - users and authentication
   - encryption metadata - algo, key used to encrypt
-
+- limited by Vec size and usize
 
 ## merkle tree
 
