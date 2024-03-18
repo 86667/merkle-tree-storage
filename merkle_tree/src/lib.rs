@@ -1,3 +1,10 @@
+#[macro_use] 
+extern crate serde_derive;
+extern crate serde;
+extern crate serde_json;
+
+pub mod interface;
+
 use std::fmt::Display;
 use sha2::{Digest, Sha256};
 
@@ -99,7 +106,7 @@ impl MerkleTree {
 
 }
 
-
+// Sha256 hash a message. Return as hex string
 pub fn hash(message: &[u8]) -> String {
     let hash = Sha256::digest(message);
     base16ct::lower::encode_string(&hash)
