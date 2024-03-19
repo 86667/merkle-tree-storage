@@ -11,7 +11,7 @@ pub struct StoreResponse {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FetchRequest {
-    pub file_index: u32
+    pub file_index: usize
 }
 
 #[derive(Serialize, Deserialize, Debug)]

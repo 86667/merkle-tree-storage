@@ -13,7 +13,7 @@ pub struct MerkleTree {
     /// Binary tree represented as a 2-dimensional vector in which the outer vector represents each row and inner vector represents the nodes on that row   
     /// Note that leaf nodes are stored in row 0 and the root node in row (tree.len()-1)
     pub tree: Vec<Vec<String>>,
-    pub leaves: usize
+    pub num_leaves: usize
 }
 
 impl Display for MerkleTree {
@@ -52,9 +52,13 @@ impl MerkleTree {
 
         MerkleTree {
             tree,
-            leaves: leaves.len()
+            num_leaves: leaves.len()
         }
     } 
+
+    pub fn get_root(&self) -> String {
+        self.tree[self.tree.len()-1][0].clone()
+    }
 
     /// Return index for item in each row of the tree from a particular leaf to root
     pub fn find_path_leaf_to_root(&self, leaf_index: usize) -> Vec<usize> {
@@ -83,8 +87,8 @@ impl MerkleTree {
 
     /// Create a vector of hashes which are the nodes required to rebuild the root hash from the queried index
     pub fn prove(&self, index: usize) -> Vec<String> {
-        if index > (self.leaves) {
-            panic!("Index too large. Tree contains {} nodes.", self.tree.len())
+        if index > (self.num_leaves) {
+            panic!("Index too large. Tree contains {} leaves.", self.num_leaves)
         }
         // First find the indicies of each node in path from leaf to root
         let path_to_root = self.find_path_leaf_to_root(index);
@@ -168,7 +172,7 @@ mod tests {
         assert_eq!(merkle_tree.tree[1][1], String::from("70311d9d203b2d7e4ff70d7fce219f82a4fcf73a110dc80187dfefb7c6e4bb87"));
         assert_eq!(merkle_tree.tree[2][0], String::from("a48572b1744e5e3f3473c9eaa91f73be774712d2b207c34eb537023af0ec6528"));
 
-        let root_hash = merkle_tree.tree[merkle_tree.tree.len()-1][0].clone();
+        let root_hash = merkle_tree.get_root();
 
         // Build all proof and verify
         let mut proof = merkle_tree.prove(0usize);
@@ -202,7 +206,7 @@ mod tests {
     fn test_find_path_leaf_to_root() {
         let merkle_tree = MerkleTree {
             tree: vec![Vec::new();4],
-            leaves: 4
+            num_leaves: 4
         };
         // test data generated manually
         assert_eq!(merkle_tree.find_path_leaf_to_root(0), Vec::from([0,0,0]));

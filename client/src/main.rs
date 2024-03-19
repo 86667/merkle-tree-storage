@@ -1,18 +1,21 @@
-use merkle_tree::interface::{FetchResponse, FetchRequest, StoreRequest, StoreResponse};
+use merkle_tree::{hash, interface::{FetchRequest, FetchResponse, StoreRequest, StoreResponse}};
 
 fn main() {
-    let input_get = FetchRequest {
-        file_index: 0
-    };
-    let res_get: FetchResponse = get("fetch", input_get);
-    println!("res_get: {:?}", res_get);
+    let inputs: Vec<String> = vec!(String::from("0"),String::from("1"),String::from("2"),String::from("3"));
+    let hashes: Vec<String> = inputs.clone().into_iter().map(|x: String| hash(x.as_ref())).collect();
 
     let input: StoreRequest = StoreRequest {
-        files: vec!(),
-        hashes: vec!()
+        files: inputs,
+        hashes
     };
     let res_post: StoreResponse = post("store", input);
     println!("res_post: {:?}", res_post);
+
+    let input_get = FetchRequest {
+      file_index: 1
+    };
+    let res_get: FetchResponse = get("fetch", input_get);
+    println!("res_get: {:?}", res_get);
 }
 
 pub fn get<T, V>(path: &str, body: T) -> V 
