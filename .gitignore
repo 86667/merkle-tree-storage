@@ -1,2 +1,5 @@
 notes.md
 target/
+
+/server/files.db
+/server/hashes.db

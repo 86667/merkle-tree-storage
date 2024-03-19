@@ -108,12 +108,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
-name = "base64ct"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
-
-[[package]]
 name = "binascii"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -189,7 +183,6 @@ dependencies = [
  "merkle_tree",
  "reqwest",
  "serde",
- "serde_derive",
  "serde_json",
 ]
 
@@ -341,6 +334,12 @@ dependencies = [
  "uncased",
  "version_check",
 ]
+
+[[package]]
+name = "file"
+version = "1.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "072420e920a41e95a021116fb47c331d1199aab0f12ca1f77903d5c0ec65c37a"
 
 [[package]]
 name = "fnv"
@@ -830,10 +829,8 @@ name = "merkle_tree"
 version = "0.1.0"
 dependencies = [
  "base16ct",
- "base64ct",
  "serde",
  "serde_derive",
- "serde_json",
  "sha2",
 ]
 
@@ -1535,10 +1532,10 @@ dependencies = [
 name = "server"
 version = "0.1.0"
 dependencies = [
+ "file",
  "merkle_tree",
  "rocket",
  "serde",
- "serde_derive",
  "serde_json",
 ]
 

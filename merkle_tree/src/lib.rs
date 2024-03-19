@@ -1,37 +1,33 @@
 #[macro_use] 
 extern crate serde_derive;
 extern crate serde;
-extern crate serde_json;
 
 pub mod interface;
 
-use std::fmt::Display;
 use sha2::{Digest, Sha256};
 
 #[derive(Debug)]
 pub struct MerkleTree {
     /// Binary tree represented as a 2-dimensional vector in which the outer vector represents each row and inner vector represents the nodes on that row   
-    /// Note that leaf nodes are stored in row 0 and the root node in row (tree.len()-1)
+    /// Note that leaf nodes are stored in row 0 and the root node in row (tree.len()-1). 
+    /// 
+    /// For example:
+    /// 
+    /// row 0:  LEAF  LEAF  LEAF  LEAF  
+    ///            \  /       \  /  
+    /// row 1:      NODE      NODE  
+    ///                 \    /  
+    /// row 2:           ROOT   
     pub tree: Vec<Vec<String>>,
     pub num_leaves: usize
-}
-
-impl Display for MerkleTree {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-
-        write!(
-            f,
-            "MerkleTree depth {}: \n1: {:?}\n2: {:?}\n3: {:?}\n",
-            self.tree.len(), self.tree[0], self.tree[1], self.tree[2]
-            // "{:?}\n{:?}\n{:?}\n",
-            // self.tree[0], self.tree[1], self.tree[2]
-        )
-    }
 }
 
 impl MerkleTree {
     /// Take a list of leaf hashes and build full merkle tree
     pub fn build(leaves: &Vec<String>) -> MerkleTree {
+        if !leaves.len().is_power_of_two() {
+            panic!("Number of leaves must be power of 2");
+        }
         let depth: usize = MerkleTree::find_depth(leaves.len());
         
         // Row 0
@@ -87,8 +83,8 @@ impl MerkleTree {
 
     /// Create a vector of hashes which are the nodes required to rebuild the root hash from the queried index
     pub fn prove(&self, index: usize) -> Vec<String> {
-        if index > (self.num_leaves) {
-            panic!("Index too large. Tree contains {} leaves.", self.num_leaves)
+        if index > self.num_leaves-1 {
+            panic!("Index too large. Tree contains {} leaves. Files are 0-indexed.", self.num_leaves)
         }
         // First find the indicies of each node in path from leaf to root
         let path_to_root = self.find_path_leaf_to_root(index);
@@ -110,7 +106,7 @@ impl MerkleTree {
 
 }
 
-// Sha256 hash a message. Return as hex string
+/// Sha256 hash a message. Return as hex string
 pub fn hash(message: &[u8]) -> String {
     let hash = Sha256::digest(message);
     base16ct::lower::encode_string(&hash)
@@ -127,11 +123,6 @@ fn concat_string(string1: &String, string2: &String) -> String {
 
 /// Take a root hash, item hash and proof and return true if proof validates the item hash in merkle tree with given root
 pub fn verify(root_hash: &String, item_hash: &String, proof: &Vec<String>) -> bool {
-    // TODO: client side: First hash the file and verify first hash
-    // if file_hash != proof[0] {
-    //     false
-    // }
-
     let mut current_hash = item_hash.clone();
     for i in 0..proof.len() {
         current_hash = hash(concat_string(&current_hash, &proof[i].clone()).as_ref());
@@ -143,20 +134,6 @@ pub fn verify(root_hash: &String, item_hash: &String, proof: &Vec<String>) -> bo
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn playground() {
-        let inputs: Vec<String> = vec!(String::from("0"),String::from("1"),String::from("2"),String::from("3"));
-        let hashes: Vec<String> = inputs.into_iter().map(|x: String| hash(x.as_ref())).collect();
-        let merkle_tree = MerkleTree::build(&hashes);
-        println!("{}", merkle_tree);
-
-        let proof = merkle_tree.prove(0usize);
-        println!("proof: {:?}", proof);
-
-        let res = verify(&merkle_tree.tree[merkle_tree.tree.len()-1][0], &hashes[0], &proof);
-        assert_eq!(res, true);
-    }
 
     #[test]
     fn test_build_and_verify() {
@@ -183,11 +160,6 @@ mod tests {
         assert!(verify(&root_hash, &hashes[2], &proof));
         proof = merkle_tree.prove(3usize);
         assert!(verify(&root_hash, &hashes[3], &proof));
-    }
-
-    #[test]
-    fn test_build_leaves_not_power_of_2() {
-
     }
 
     #[test]
