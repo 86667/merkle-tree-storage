@@ -33,14 +33,7 @@ where
     let endpoint = "http://127.0.0.1:8000";
     let client = reqwest::blocking::Client::new();
     let builder = client.get(&format!("{}/{}", endpoint, path));
-
-    // catch reqwest errors
-    let value = match builder.json(&body).send() {
-        Ok(v) => v.text().unwrap(),
-        Err(e) => panic!("{:?}", e),
-    };
-    println!("GET return value: {:?}", value);
-
+    let value = builder.json(&body).send().unwrap().text().unwrap();
     serde_json::from_str(value.as_str()).unwrap()
 }
 
@@ -55,32 +48,6 @@ where
     let client = reqwest::blocking::Client::new();
     let builder = client.post(&format!("{}/{}", endpoint, path));
 
-    // catch reqwest errors
-    let value = match builder.json(&body).send() {
-        Ok(v) => {
-            // Reject responses that are too long
-            // TODO: set reasonable limit?
-            match v.content_length() {
-                Some(l) => {
-                    if l > 1000000 {
-                        println!("POST value ignored because of size: {}", l);
-                        panic!("POST value ignored because of size: {}",l);
-                    }
-                }
-                None => (),
-            };
-
-            let text = v.text().unwrap();
-
-            if text.contains(&String::from("Error: ")) {
-                panic!("Error in post: {}", text);
-            }
-            text
-        }
-
-        Err(e) => panic!("{:?}", e),
-    };
-
-    println!("Post return value: {:?}", value);
+    let value = builder.json(&body).send().unwrap().text().unwrap();
     serde_json::from_str(value.as_str()).expect(&format!("failed to parse: {}", value.as_str()))
 }
