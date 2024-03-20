@@ -1,21 +1,21 @@
 #[derive(Serialize, Deserialize, Debug)]
 pub struct StoreRequest {
     pub files: Vec<String>,
-    pub hashes: Vec<String>
+    pub hashes: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct StoreResponse {
-    pub root: String
+    pub root: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FetchRequest {
-    pub file_index: usize
+    pub file_index: usize,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FetchResponse {
     pub file: String,
-    pub proof: Vec<String>
+    pub proof: Vec<String>,
 }

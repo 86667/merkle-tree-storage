@@ -3,3 +3,5 @@ target/
 
 /server/files.db
 /server/hashes.db
+/client/root.db
+/simple_database/foo
