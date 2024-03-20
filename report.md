@@ -21,7 +21,7 @@ I left the burden of performing the hashing of files to the client which passes 
 
 There are a number of obvious places in which the code falls very short from proudciton-ready. Here are a few items which would need to be resolved before any kind of release: 
 
-- We currently `panic` for both caught user errors and unexpected errors. Some `ServerError` type should be defined with user friendly return errors for all possible failure scenarios
+- We currently `panic` for both caught user errors and unexpected errors in both client and server. Some `ServerError` type should be defined with user friendly return errors for all possible failure scenarios
 - We send files as `Vec<String>` in the body of a http `post` request. This is not the tool for the job - a file transfer protocol should be used to avoid hitting size limits 
 - Hosting capabilities are not included here along with network safety mechanisms such as ddos protection, firewall, authentication etc
 - Lots of functionality is left untested and so there are most likley many bugs. All fucntions containing logic should be tested with network and db calls mocked. 
@@ -42,19 +42,11 @@ Option 2) may be the better choice if the server must be restrictive on storage 
 
 ## Security improvements
 
-The security of our Merkle proof is ultimately dependent on the collision resistence of our chosen hash function. An adversarial server with the capability to produce a second pre-image for any of the hash digests in the tree could produce a file and proof that results in the same root hash.
+The security of our Merkle proof is ultimately dependent on the collision resistence of our chosen hash function. An adversarial server with the capability to produce a second pre-image for any of the hash digests in the tree could produce a different file and a proof which still verifies with the same root hash.
 
-One way to mitigate this would be to return the tree depth along with the root hash on creation. Then, the verifier would check that a proof has the correct number of hash digests. This would limit the adversary to having to produce a second pre-image for the file requested for retreival.
+One way to mitigate this would be to return the tree depth along with the root hash on creation. The verifier would then check that a proof has the correct number of hash digests. This would limit the adversary to having to produce a second pre-image for the exact file that was requested for retreival.
 
 A further enhancement for the most security concernced would be to use several hash functions in constructing several Merkle trees, roots and proof. Finding a second pre-image for a given hash function is one thing but finding a second pre-image for some data over multiple hash functions is about as inplausible as we can hope to achieve.
-
-
-
-## Scalability 
-
-In order for this server code to scale the first thing required would be for the database to be replaced with some form of distributed solution. Currently, each instance of the server and its stored data would be siloed. 
-
-There would need to be some API management system to handle requests from the central domain entry point and forward them to the server instances.
 
 
 ## Usability improvements
@@ -62,11 +54,16 @@ There would need to be some API management system to handle requests from the ce
 Some usability improvements:
 
 - Metdata - We may wish to allow the user to store some metadata along with their files. A name which can be used to reference it would be useful rather than requiring its index. Encryption data such as algorithm and a reference to which key to decrypt with so that this doesnt need to be stored locally by the client may also be handy. 
-- Our server curretly can store only one set of files. This should be expanded to store a set of files for distinct users with authentication, perhaps via api keys, to limit access.
+- Our server currently can store only one set of files. This should be expanded to store a set of files for distinct users with authentication, perhaps via api keys, to limit access.
 - Files are written as a whole and read one-by-one. It would be fairly straightforward to allow for files to be edited and a new root hash returned, and for retrieval to be done mutliple files at a time.
+
+
+## Scalability 
+
+In order for this server code to scale the first thing required would be for the database to be replaced with some form of distributed solution. Currently, each instance of the server and its stored data would be siloed. There would also need to be some API management system to handle requests from the central domain entry point and forward them to the server instances.
 
 
 # Personal thoughts
 
 - I appreciate the opportunity to re-familiarise myself with Rust. Its been a good 3 years of barely using the language and I have missed it's strictness. Once you've managed to create well-defined types and interfaces, the code flows and runs often without error.
-- I enojyed designing the Merkle tree - getting my book and pen out and playing with algorithms. I also enjoyed thinking about its security and efficiency. These more theoretical challenges are what I'm looking to get more of from my work.
+- I enjoyed designing the Merkle tree - getting my book and pen out and playing with algorithms. I also enjoyed thinking about its security and efficiency. These more theoretical challenges are what I'm looking to get more of from my work.
