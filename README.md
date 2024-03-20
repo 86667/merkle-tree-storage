@@ -24,7 +24,13 @@ In one terminal run the server:
 
 Note the url which it is launched from. It is expected to be `http://127.0.0.1:8000`. If not, then replace this value in the below commands.
 
-In another terminal control the client. First, create a `persist-files` request to persist all files server-side:
+In another terminal control the client:
+
+```bash
+  cd client
+```
+
+First, create a `persist-files` request to persist all files server-side:
 
 ```bash
   cargo run -- http://127.0.0.1:8000 persist-files
