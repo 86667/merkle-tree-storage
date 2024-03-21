@@ -1,6 +1,6 @@
 # Merkle Tree Storage Server
 
-A basic storage server for String files with proven integrity via a Merkle tree. 
+A basic storage server for String files in which integrity is proven via a Merkle tree proof. 
 
 ## Getting started
 
@@ -14,7 +14,7 @@ Build all workspaces:
 
 ### Setup and running
 
-The client reads files from firectoy `client/files`. The files must have names in the pattern `file0`, `file1`, `file2`, etc.
+The client reads files from directoy `client/files`. The files must have names in the pattern `file0`, `file1`, `file2`, etc.
 
 In one terminal run the server:
 
