@@ -61,9 +61,3 @@ Some usability improvements:
 ## Scalability 
 
 In order for this server code to scale the first thing required would be for the database to be replaced with some form of distributed solution. Currently, each instance of the server and its stored data would be siloed. There would also need to be some API management system to handle requests from the central domain entry point and forward them to the server instances.
-
-
-# Personal thoughts
-
-- I appreciate the opportunity to re-familiarise myself with Rust. Its been a good 3 years of barely using the language and I have missed it's strictness. Once you've managed to create well-defined types and interfaces, the code flows and runs often without error.
-- I enjoyed designing the Merkle tree - getting my book and pen out and playing with algorithms. I also enjoyed thinking about its security and efficiency. These more theoretical challenges are what I'm looking to get more of from my work.
